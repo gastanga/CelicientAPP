@@ -1,4 +1,4 @@
-package com.celicienta.celicienta.Entities;
+package com.celicienta.celicienta.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
