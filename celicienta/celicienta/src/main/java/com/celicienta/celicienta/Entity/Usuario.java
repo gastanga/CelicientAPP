@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Usuario {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)

@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
     @Autowired
-    private UsuarioService vendedorService;
-
-    @Autowired
     private UsuarioService usuarioService;
+
 
     @PostMapping("/registrar")
     public Usuario registrar(@RequestBody Usuario usuario) {
@@ -21,11 +19,11 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public Usuario login(@RequestParam String usuario, @RequestParam String password) {
-        return vendedorService.iniciarSesion(usuario, password);
+        return usuarioService.iniciarSesion(usuario, password);
     }
 
     @GetMapping("/{id}")
     public Usuario obtener(@PathVariable Long id) {
-        return vendedorService.buscarPorId(id);
+        return usuarioService.buscarPorId(id);
     }
 }

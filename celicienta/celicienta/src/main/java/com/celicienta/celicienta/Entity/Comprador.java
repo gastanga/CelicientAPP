@@ -1,4 +1,4 @@
-package com.celicienta.celicienta.Entity;
+/*package com.celicienta.celicienta.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
@@ -12,3 +12,4 @@ public class Comprador extends Usuario {
     private List<Pedido> pedidos;
 
 }
+*/

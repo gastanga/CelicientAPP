@@ -1,17 +1,12 @@
 package com.celicienta.celicienta.Service;
 import com.celicienta.celicienta.Entity.Usuario;
-import com.celicienta.celicienta.Entity.Vendedor;
 import com.celicienta.celicienta.Repository.UsuarioRepo;
-import com.celicienta.celicienta.Repository.VendedorRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
 public class UsuarioService {
-
-    @Autowired
-    private VendedorRepo vendedorRepo;
 
     @Autowired
     private UsuarioRepo usuarioRepo;
@@ -39,6 +34,6 @@ public class UsuarioService {
 
     public Usuario buscarPorId(Long id) {
         return usuarioRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vendedor no encontrado."));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
     }
 }

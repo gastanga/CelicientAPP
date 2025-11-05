@@ -27,6 +27,7 @@ public class ProductoPedido {
     }
 
     public void calcularSubtotal() {
+        if (producto != null)
         this.subtotal = this.precioUnitario * (cantidadPersonas / (double) producto.getPorcionBasePersonas());
     }
 

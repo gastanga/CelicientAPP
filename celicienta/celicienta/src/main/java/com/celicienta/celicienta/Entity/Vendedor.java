@@ -1,4 +1,4 @@
-package com.celicienta.celicienta.Entity;
+/*package com.celicienta.celicienta.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
@@ -13,4 +13,4 @@ public class Vendedor extends Usuario {
     private int radioEntrega;
     @OneToMany (mappedBy = "vendedor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Producto> productos;
-}
+}*/
