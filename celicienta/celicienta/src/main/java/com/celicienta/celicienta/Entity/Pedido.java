@@ -28,7 +28,7 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "comprador_id")
-    private Comprador comprador;
+    private Usuario comprador;
 
     @ManyToOne
     @JoinColumn(name = "vendedor_id")

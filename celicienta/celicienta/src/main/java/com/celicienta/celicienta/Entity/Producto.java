@@ -25,7 +25,7 @@ public class Producto {
 
     @ManyToOne
     @JoinColumn (name = "vendedor_id")
-    private Vendedor vendedor;
+    private Usuario vendedor;
 
     @OneToMany (mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductoIngrediente> receta = new ArrayList<>();

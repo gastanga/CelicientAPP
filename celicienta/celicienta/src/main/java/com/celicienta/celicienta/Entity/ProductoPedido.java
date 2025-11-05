@@ -22,7 +22,7 @@ public class ProductoPedido {
     private double precioUnitario;
     private double subtotal;
 
-    public Vendedor getVendedor() {
+    public Usuario getVendedor() {
         return producto != null ? producto.getVendedor() : null;
     }
 
