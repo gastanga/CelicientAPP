@@ -18,7 +18,7 @@ public class Pedido {
     @Enumerated (EnumType.STRING)
     private estadoPedido estado = estadoPedido.PENDIENTE;
 
-    private enum estadoPedido {
+    public enum estadoPedido {
         PENDIENTE,
         EN_PROCESO,
         ENVIADO,
@@ -30,16 +30,12 @@ public class Pedido {
     @JoinColumn(name = "comprador_id")
     private Usuario comprador;
 
-    @ManyToOne
-    @JoinColumn(name = "vendedor_id")
-    private Usuario vendedor;
-
     @OneToMany (mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductoPedido> detalles;
 
-    private int cantidadPersonas;
     private String metodoPago;
     private String observaciones;
     private String direccionEntrega;
     private double total;
+
 }

@@ -18,7 +18,7 @@ public class ProductoPedido {
     @JoinColumn (name = "producto_id")
     private Producto producto;
 
-    private int cantidadPersonas;
+    private int cantidadPersonas; // Cantidad de personas para las que se pide el producto
     private double precioUnitario;
     private double subtotal;
 
