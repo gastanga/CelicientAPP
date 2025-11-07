@@ -18,7 +18,7 @@ public class Producto {
     @Column (length = 1000)
     private String descripcion;
 
-    private int porcionBasePersonas = 4;
+    private int porcionBasePersonas;
     private double precio, costoProduccion;
     private int plazoEntregaDias;
     private boolean activo;

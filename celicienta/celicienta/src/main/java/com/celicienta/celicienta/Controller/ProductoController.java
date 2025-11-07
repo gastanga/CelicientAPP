@@ -1,4 +1,5 @@
 package com.celicienta.celicienta.Controller;
+import com.celicienta.celicienta.DTO.ProductoDTO;
 import com.celicienta.celicienta.Entity.Producto;
 import com.celicienta.celicienta.Service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,18 @@ public class ProductoController {
     private ProductoService productoService;
 
     @PostMapping("/publicar/{usuarioId}")
-    public ResponseEntity<Producto> publicar(@PathVariable Long usuarioId, @RequestBody Producto producto) {
+    public ResponseEntity<Producto> publicar(@PathVariable Long usuarioId, @RequestBody ProductoDTO request) {
         try {
-            Producto nuevoProducto = productoService.publicarProducto(usuarioId, producto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProducto);
+            Producto nuevo = new Producto();
+            nuevo.setNombre(request.getNombre());
+            nuevo.setDescripcion(request.getDescripcion());
+            nuevo.setPrecio(request.getPrecio());
+            nuevo.setPlazoEntregaDias(request.getPlazoEntregaDias());
+            nuevo.setActivo(true);
+
+            Producto creado = productoService.publicarProducto(usuarioId, nuevo);
+            return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

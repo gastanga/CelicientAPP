@@ -37,4 +37,7 @@ public class Usuario {
     private String codigoPostal;
     private LocalDateTime fechaRegistro = LocalDateTime.now();
 
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private VendedorProfile vendedorProfile;
+
 }
