@@ -2,15 +2,15 @@ package com.celicienta.celicienta.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table (name = "usuarios")
 public class Usuario {
+
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private long id;
@@ -28,10 +28,14 @@ public class Usuario {
     @Column (nullable = false)
     private String password;
 
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private CompradorProfile compradorProfile;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "usuario_roles", joinColumns = @JoinColumn(name = "usuario_id"))
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private Set<String> roles = new HashSet<>();
+    private Set<Rol> roles = new HashSet<>();
 
     private String provincia, ciudad;
     private String codigoPostal;
@@ -39,5 +43,34 @@ public class Usuario {
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private VendedorProfile vendedorProfile;
+
+    private int intentosFallidos = 0;
+    private boolean bloqueado = false;
+
+    // 🧠 Setter personalizado con validación de contraseña
+    public void setPassword(String password) {
+        if (!esPasswordValida(password)) {
+            throw new IllegalArgumentException(
+                    "La contraseña debe tener al menos 8 caracteres, incluir una letra, un número y un símbolo."
+            );
+        }
+        this.password = password;
+    }
+
+    // 🔍 Método privado de validación
+    private boolean esPasswordValida(String password) {
+        // Regex: al menos una letra, un número, un símbolo, y mínimo 8 caracteres
+        String regex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&.#_-])[A-Za-z\\d@$!%*?&.#_-]{8,}$";
+        return password != null && password.matches(regex);
+    }
+
+    public boolean esVendedor() {
+        return roles.contains(Rol.VENDEDOR);
+    }
+
+    public boolean esAdmin() {
+        return roles.contains(Rol.ADMIN);
+    }
+
 
 }

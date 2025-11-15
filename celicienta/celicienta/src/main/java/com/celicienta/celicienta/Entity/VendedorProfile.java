@@ -24,7 +24,7 @@ public class VendedorProfile {
     private int radioEntregaKm;
 
     private Double ratingPromedio = 0.0;
-    private Integer totalResenas = 0;
+    private int totalResenas = 0;
 
     public VendedorProfile(Usuario usuario, String descripcion) {
         this.usuario = usuario;
