@@ -1,4 +1,5 @@
 package com.celicienta.celicienta.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,11 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VendedorProfile {
     @Id
-    private Long id; // mismo id que Usuario (o usa @GeneratedValue si preferís relación distinta)
+    private Long id;
 
     @OneToOne
     @MapsId
     @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Usuario usuario;
 
     private String nombreTienda;
@@ -25,11 +27,5 @@ public class VendedorProfile {
 
     private Double ratingPromedio = 0.0;
     private int totalResenas = 0;
-
-    public VendedorProfile(Usuario usuario, String descripcion) {
-        this.usuario = usuario;
-        this.nombreTienda = descripcion; // usamos la descripción como nombre de tienda, por ahora
-    }
-
 
 }

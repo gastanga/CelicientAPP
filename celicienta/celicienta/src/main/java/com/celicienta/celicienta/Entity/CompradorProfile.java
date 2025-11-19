@@ -1,4 +1,5 @@
 package com.celicienta.celicienta.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class CompradorProfile {
     @OneToOne
     @MapsId
     @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Usuario usuario;
 
     private String direccionEntregaDefault;

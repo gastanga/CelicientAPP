@@ -29,7 +29,6 @@ public class UsuarioService {
         usuario.setPassword(encoder.encode(usuario.getPassword()));
         usuario.getRoles().add(Rol.COMPRADOR);
 
-        // ⚙️ En el futuro: aquí se cifrará la contraseña con BCrypt
         Usuario guardado = usuarioRepo.save(usuario);
 
         // Crear perfil de comprador por defecto
@@ -37,24 +36,67 @@ public class UsuarioService {
         cp.setUsuario(guardado);
 
         compradorProfileRepo.save(cp);
+        guardado.setCompradorProfile(cp);
 
         return guardado;
     }
 
-    public Usuario registrarUsuario(RegistroDTO dto) {
+    public Usuario registrarUsuarioDto(RegistroDTO dto) {
+
+        // 1) Validación básica de campos obligatorios
+        if (dto.getUsuario() == null || dto.getUsuario().isBlank()) {
+            throw new RuntimeException("El nombre de usuario es obligatorio.");
+        }
+
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            throw new RuntimeException("El email es obligatorio.");
+        }
+
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new RuntimeException("La contraseña es obligatoria.");
+        }
+
+        // 2) Validar duplicado de usuario o email
+        if (usuarioRepo.existsByUsuarioOrEmail(dto.getUsuario(), dto.getEmail())) {
+            throw new RuntimeException("Usuario o email ya registrado.");
+        }
+
+        // 3) Validar la contraseña ANTES de cifrarla
+        Usuario temporal = new Usuario();
+        if (!temporal.esPasswordValida(dto.getPassword())) {
+            throw new RuntimeException(
+                    "La contraseña debe tener 8 caracteres, 1 letra, 1 número y 1 símbolo."
+            );
+        }
+
+        // 4) Crear usuario y copiar datos
         Usuario u = new Usuario();
         u.setUsuario(dto.getUsuario());
-        u.setPassword(dto.getPassword());
         u.setEmail(dto.getEmail());
+        u.setNombreCompleto(dto.getNombreCompleto());
+
+        // 5) Cifrar contraseña recién ahora
+        u.setPassword(encoder.encode(dto.getPassword()));
+
+        // 6) Rol mínimo obligatorio: COMPRADOR
         u.getRoles().add(Rol.COMPRADOR);
 
+        // 7) Guardar usuario
         Usuario guardado = usuarioRepo.save(u);
 
+        // 8) Crear perfil del comprador (default)
         CompradorProfile cp = new CompradorProfile();
         cp.setUsuario(guardado);
+        guardado.setCompradorProfile(cp);
         compradorProfileRepo.save(cp);
 
+        // 9) Si marcó “quiero ser vendedor”, validar y activar
         if (dto.isQuiereSerVendedor()) {
+
+            if (dto.getNombreTienda() == null || dto.getNombreTienda().isBlank()) {
+                throw new RuntimeException("El nombre de tienda es obligatorio para vendedores.");
+            }
+
             activarVendedor(guardado.getId(), dto.getNombreTienda());
         }
 
@@ -70,7 +112,6 @@ public class UsuarioService {
         vp.setNombreTienda(nombreTienda);
 
         u.getRoles().add(Rol.VENDEDOR);
-        vp.setUsuario(u);
         u.setVendedorProfile(vp);
 
         usuarioRepo.save(u);

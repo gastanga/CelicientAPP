@@ -7,7 +7,6 @@ import java.util.Set;
 
 @Data
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Table (name = "usuarios")
 public class Usuario {
 
@@ -31,7 +30,6 @@ public class Usuario {
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private CompradorProfile compradorProfile;
 
-    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "usuario_roles", joinColumns = @JoinColumn(name = "usuario_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
@@ -58,7 +56,7 @@ public class Usuario {
     }
 
     // 🔍 Método privado de validación
-    private boolean esPasswordValida(String password) {
+    public boolean esPasswordValida(String password) {
         // Regex: al menos una letra, un número, un símbolo, y mínimo 8 caracteres
         String regex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&.#_-])[A-Za-z\\d@$!%*?&.#_-]{8,}$";
         return password != null && password.matches(regex);
