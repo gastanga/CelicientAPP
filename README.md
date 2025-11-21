@@ -4,6 +4,7 @@ La CelicientApp es un sistema de e-commerce desarrollado en Java con Spring Boot
 El backend está diseñado para ser seguro, escalable y fácilmente integrable con un front-end externo.
 
 Características principales
+
 ✔ Gestión de usuarios
 
 Registro y login básico.
