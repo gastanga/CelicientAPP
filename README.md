@@ -84,7 +84,7 @@ Perfil de comprador.
 
 Integración de métodos de pago.
 
-Cómo ejecutar
+✔ Cómo ejecutar
 
 Clonar el repositorio.
 
