@@ -2,14 +2,11 @@ package com.celicienta.celicienta.DTO;
 import lombok.Data;
 
 @Data
-public class ProductoDTO {
-    private Long id;
+public class AnuncioDTO {
+    private Long idVendedor;
     private String nombre;
     private String descripcion;
     private Double precio;
     private int plazoEntregaDias;
-    private boolean activo;
-
-    private VendedorPublicoDTO vendedor;
-
+    private int cantidadMinimaPersonas = 4;
 }

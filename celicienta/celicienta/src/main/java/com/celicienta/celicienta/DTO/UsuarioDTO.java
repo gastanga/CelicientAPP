@@ -17,7 +17,7 @@ public class UsuarioDTO {
         this.nombreCompleto = u.getNombreCompleto();
         this.email = u.getEmail();
         this.telefono = u.getTelefono();
-        this.usuario = u.getUsuario();
+        this.usuario = u.getUsername();
         this.codigoPostal = u.getCodigoPostal();
         this.fechaRegistro = u.getFechaRegistro();
         // Si tiene perfil de comprador

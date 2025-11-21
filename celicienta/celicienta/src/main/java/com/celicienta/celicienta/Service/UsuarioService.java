@@ -22,7 +22,7 @@ public class UsuarioService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public Usuario registrarUsuario(Usuario usuario) {
-        if (usuarioRepo.existsByUsuarioOrEmail(usuario.getUsuario(), usuario.getEmail())) {
+        if (usuarioRepo.existsByUsuarioOrEmail(usuario.getUsername(), usuario.getEmail())) {
             throw new RuntimeException("Usuario o email ya registrado");
         }
 
@@ -71,7 +71,7 @@ public class UsuarioService {
 
         // 4) Crear usuario y copiar datos
         Usuario u = new Usuario();
-        u.setUsuario(dto.getUsuario());
+        u.setUsername(dto.getUsuario());
         u.setEmail(dto.getEmail());
         u.setNombreCompleto(dto.getNombreCompleto());
 

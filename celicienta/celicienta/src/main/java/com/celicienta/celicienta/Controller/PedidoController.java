@@ -26,6 +26,22 @@ public class PedidoController {
         }
     }
 
+    @PostMapping("/cesta/{compradorId}")
+    public ResponseEntity<Pedido> crearPedidoDesdeCesta(
+            @PathVariable Long compradorId,
+            @RequestParam String metodoPago,
+            @RequestParam String observaciones,
+            @RequestParam String direccionEntrega) {
+        try {
+            Pedido pedido = new Pedido();
+            Pedido nuevo = pedidoService.crearPedidoDesdeCesta(compradorId, pedido,
+                    metodoPago, observaciones, direccionEntrega);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
     @GetMapping("/listar")
     public ResponseEntity<List<Pedido>> listarPedidos() {
         return ResponseEntity.ok(pedidoService.listarPedidos());
@@ -59,14 +75,12 @@ public class PedidoController {
         return pedidos.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(pedidos);
     }
 
-    // Pedidos como vendedor
     @GetMapping("/vendedor/{id}")
     public ResponseEntity<List<Pedido>> verPedidosComoVendedor(@PathVariable Long id) {
         List<Pedido> pedidos = pedidoService.listarPedidosPorVendedor(id);
         return pedidos.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(pedidos);
     }
 
-    // Ver un pedido puntual
     @GetMapping("/{id}")
     public ResponseEntity<Pedido> verPedido(@PathVariable Long id) {
         Pedido pedido = pedidoService.buscarPorId(id);

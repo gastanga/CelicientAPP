@@ -1,11 +1,16 @@
 package com.celicienta.celicienta.Controller;
+import com.celicienta.celicienta.DTO.ProductoDTO;
 import com.celicienta.celicienta.DTO.UsuarioDTO;
 import com.celicienta.celicienta.DTO.VendedorDTO;
 import com.celicienta.celicienta.Entity.*;
 import com.celicienta.celicienta.Repository.VendedorProfileRepo;
 import com.celicienta.celicienta.Service.UsuarioService;
+import com.celicienta.celicienta.Service.VendedorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -15,8 +20,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private VendedorProfileRepo vendedorProfileRepo;
-
+    private VendedorService vendedorService;
 
     @PostMapping("/registrar")
     public Usuario registrar(@RequestBody Usuario usuario) {
@@ -40,15 +44,21 @@ public class UsuarioController {
     }
 
     @PostMapping("/{id}/activar-vendedor")
-    public VendedorProfile activar(@PathVariable Long id, @RequestParam String nombreTienda) {
-        return usuarioService.activarVendedor(id, nombreTienda);
+    public VendedorDTO activar(@PathVariable Long id, @RequestParam String nombreTienda) {
+        VendedorProfile vp = usuarioService.activarVendedor(id, nombreTienda);
+        return new VendedorDTO(vp);
     }
 
     @GetMapping("/vendedor/{id}")
     public VendedorDTO verVendedor(@PathVariable Long id) {
-        VendedorProfile vp = vendedorProfileRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
+        VendedorProfile vp = vendedorService.obtenerPerfil(id);
         return new VendedorDTO(vp);
+    }
+
+    @GetMapping("/vendedor/{id}/productos")
+    public ResponseEntity<List<ProductoDTO>> listarProductos(@PathVariable Long id) {
+        List<ProductoDTO> lista = vendedorService.listarProductosDto(id);
+        return ResponseEntity.ok(lista);
     }
 
 }

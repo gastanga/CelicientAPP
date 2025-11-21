@@ -30,4 +30,7 @@ public class Producto {
     @OneToMany (mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductoIngrediente> receta = new ArrayList<>();
 
+    public double precioPorPersona() {
+        return precio / porcionBasePersonas;
+    }
 }

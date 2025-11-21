@@ -4,10 +4,17 @@ import com.celicienta.celicienta.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PedidoService {
+
+    @Autowired
+    private CestaService cestaService;
+
+    @Autowired
+    private ProductoRepo productoRepo;
 
     @Autowired
     private PedidoRepo pedidoRepo;
@@ -18,17 +25,6 @@ public class PedidoService {
     @Autowired
     private ProductoPedidoRepo productoPedidoRepo;
 
-    public List<Pedido> listarPedidosPorComprador(Long compradorId) {
-        return pedidoRepo.findByCompradorId(compradorId);
-    }
-
-    public List<Pedido> listarPedidosPorVendedor(Long vendedorId) {
-        return pedidoRepo.findByVendedorId(vendedorId);
-    }
-
-    public Pedido buscarPorId(Long id) {
-        return pedidoRepo.findById(id).orElse(null);
-    }
 
     public Pedido crearPedido(Long compradorId, Pedido pedido) {
 
@@ -41,6 +37,7 @@ public class PedidoService {
         if (pedido.getDetalles() != null) {
             for (ProductoPedido detalle : pedido.getDetalles()) {
                 detalle.setPedido(pedido);
+                detalle.setPrecioUnitario(detalle.getProducto().getPrecio());
                 detalle.calcularSubtotal();
                 total += detalle.getSubtotal();
             }
@@ -48,6 +45,60 @@ public class PedidoService {
         pedido.setTotal(total);
 
         return pedidoRepo.save(pedido);
+    }
+
+    public Pedido crearPedidoDesdeCesta(Long compradorId, Pedido pedido, String metodoPago,
+                                        String observaciones, String direccionEntrega) {
+
+        Usuario comprador = usuarioRepo.findById(compradorId)
+                .orElseThrow(() -> new RuntimeException("Comprador no encontrado"));
+
+        List<Long> idsProductos = cestaService.obtenerCesta(compradorId);
+        if (idsProductos.isEmpty()) {
+            throw new RuntimeException("La cesta está vacía");
+        }
+
+        List<ProductoPedido> detalles = new ArrayList<>();
+        double total = 0;
+
+        for (Long idProd : idsProductos) {
+            Producto producto = productoRepo.findById(idProd)
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+            ProductoPedido pp = new ProductoPedido();
+            pp.setProducto(producto);
+            pp.setCantidadPersonas(producto.getPorcionBasePersonas());
+            pp.calcularSubtotal();
+            pp.setPrecioUnitario(producto.getPrecio());
+
+            total += pp.getSubtotal();
+            detalles.add(pp);
+        }
+
+        pedido.setComprador(comprador);
+        pedido.setDetalles(detalles);
+        pedido.setTotal(total);
+        pedido.setMetodoPago(metodoPago);
+        pedido.setObservaciones(observaciones);
+        pedido.setDireccionEntrega(direccionEntrega);
+
+        Pedido pedidoGuardado = pedidoRepo.save(pedido);
+
+        cestaService.vaciarCesta(compradorId);
+
+        return pedidoGuardado;
+    }
+
+    public List<Pedido> listarPedidosPorComprador(Long compradorId) {
+        return pedidoRepo.findByCompradorId(compradorId);
+    }
+
+    public List<Pedido> listarPedidosPorVendedor(Long vendedorId) {
+        return pedidoRepo.findByVendedorId(vendedorId);
+    }
+
+    public Pedido buscarPorId(Long id) {
+        return pedidoRepo.findById(id).orElse(null);
     }
 
     public List<Pedido> listarPedidos() {
