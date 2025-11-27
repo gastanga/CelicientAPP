@@ -89,6 +89,50 @@ public class PedidoService {
         return pedidoGuardado;
     }
 
+    public Pedido crearPedidoDesdeCesta(Long compradorId, int cantidadPersonas) {
+
+        List<Long> idsProductos = cestaService.obtenerCesta(compradorId);
+
+        if (idsProductos.isEmpty()) {
+            throw new RuntimeException("La cesta está vacía");
+        }
+
+        Usuario comprador = usuarioRepo.findById(compradorId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Pedido pedido = new Pedido();
+        pedido.setComprador(comprador);
+
+        List<ProductoPedido> detalles = new ArrayList<>();
+        double total = 0;
+
+        for (Long idProd : idsProductos) {
+
+            Producto producto = productoRepo.findById(idProd)
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+            ProductoPedido det = new ProductoPedido();
+            det.setProducto(producto);
+            det.setCantidadPersonas(cantidadPersonas);
+            det.setPrecioUnitario(producto.getPrecio());
+            det.setPedido(pedido);
+
+            det.calcularSubtotal();
+            total += det.getSubtotal();
+
+            detalles.add(det);
+        }
+
+        pedido.setDetalles(detalles);
+        pedido.setTotal(total);
+
+        Pedido guardado = pedidoRepo.save(pedido);
+
+        cestaService.vaciarCesta(compradorId);
+
+        return guardado;
+    }
+
     public List<Pedido> listarPedidosPorComprador(Long compradorId) {
         return pedidoRepo.findByCompradorId(compradorId);
     }

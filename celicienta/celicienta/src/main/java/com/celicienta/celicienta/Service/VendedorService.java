@@ -1,5 +1,5 @@
 package com.celicienta.celicienta.Service;
-import com.celicienta.celicienta.DTO.ProductoDTO;
+import com.celicienta.celicienta.DTO.AnuncioDTO;
 import com.celicienta.celicienta.DTO.VendedorPublicoDTO;
 import com.celicienta.celicienta.Entity.Producto;
 import com.celicienta.celicienta.Entity.Rol;
@@ -54,7 +54,7 @@ public class VendedorService {
         return productoRepo.findByVendedor(vp.getUsuario());
     }
 
-    public List<ProductoDTO> listarProductosDto(Long usuarioId) {
+    public List<AnuncioDTO> listarProductosDto(Long usuarioId) {
         VendedorProfile vp = obtenerPerfil(usuarioId);
         List<Producto> productos = productoRepo.findByVendedor(vp.getUsuario());
 
@@ -63,9 +63,9 @@ public class VendedorService {
                 .collect(Collectors.toList());
     }
 
-    private ProductoDTO toDTO(Producto p) {
-        ProductoDTO dto = new ProductoDTO();
-        dto.setId(p.getId());
+    private AnuncioDTO toDTO(Producto p) {
+        AnuncioDTO dto = new AnuncioDTO();
+        dto.setIdProducto(p.getId());
         dto.setNombre(p.getNombre());
         dto.setDescripcion(p.getDescripcion());
         dto.setPrecio(p.getPrecio());

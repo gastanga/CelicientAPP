@@ -16,10 +16,12 @@ public class Usuario {
 
     private String nombreCompleto;
 
+    private String dni;
+
     @Column (unique = true, nullable = false)
     private String email;
 
-    private String telefono;
+    private String telefonoEntrega;
 
     @Column (unique = true, nullable = false)
     private String username;
@@ -35,7 +37,7 @@ public class Usuario {
     @Column(name = "role")
     private Set<Rol> roles = new HashSet<>();
 
-    private String provincia, ciudad;
+    private String provincia, ciudad, direccionEntrega;
     private String codigoPostal;
     private LocalDateTime fechaRegistro = LocalDateTime.now();
 
@@ -45,13 +47,7 @@ public class Usuario {
     private int intentosFallidos = 0;
     private boolean bloqueado = false;
 
-    // 🧠 Setter personalizado con validación de contraseña
     public void setPassword(String password) {
-        if (!esPasswordValida(password)) {
-            throw new IllegalArgumentException(
-                    "La contraseña debe tener al menos 8 caracteres, incluir una letra, un número y un símbolo."
-            );
-        }
         this.password = password;
     }
 

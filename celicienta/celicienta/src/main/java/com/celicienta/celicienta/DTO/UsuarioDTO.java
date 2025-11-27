@@ -16,11 +16,11 @@ public class UsuarioDTO {
     public UsuarioDTO(Usuario u) {
         this.nombreCompleto = u.getNombreCompleto();
         this.email = u.getEmail();
-        this.telefono = u.getTelefono();
+        this.telefono = u.getTelefonoEntrega();
         this.usuario = u.getUsername();
         this.codigoPostal = u.getCodigoPostal();
         this.fechaRegistro = u.getFechaRegistro();
-        // Si tiene perfil de comprador
+
         if (u.getCompradorProfile() != null) {
             this.direccionEntregaDefault = u.getCompradorProfile().getDireccionEntregaDefault();
         }

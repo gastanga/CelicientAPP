@@ -15,7 +15,6 @@ public class CompradorProfile {
     @JoinColumn(name = "usuario_id")
     @JsonIgnore
     private Usuario usuario;
-
     private String direccionEntregaDefault;
     private String telefonoEntrega;
 }

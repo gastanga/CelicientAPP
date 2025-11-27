@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<body>
+<h1>Cesta</h1>
+
+<p>Productos agregados (IDs):</p>
+
+<ul>
+  <li th:each="id : ${ids}" th:text="${id}"></li>
+</ul>
+
+<form action="/comprar" method="post">
+  Personas: <input type="number" name="cantidadPersonas" min="4" value="4">
+  <button type="submit">Comprar</button>
+</form>
+
+<a href="/">Volver a Productos</a>
+
+</body>
+</html>

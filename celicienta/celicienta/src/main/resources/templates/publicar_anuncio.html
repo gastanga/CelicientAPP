@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Publicar Anuncio</title>
+</head>
+<body>
+<h1>Publicar nuevo anuncio</h1>
+
+<form th:action="@{/productos/nuevo/{usuarioId}(usuarioId=${usuarioId})}"
+      th:object="${crearAnuncioDTO}" method="post">
+
+    <label>Nombre:</label>
+    <input type="text" th:field="*{nombre}" required/>
+    <br/>
+
+    <label>Descripción:</label>
+    <textarea th:field="*{descripcion}" required></textarea>
+    <br/>
+
+    <label>Precio:</label>
+    <input type="number" th:field="*{precio}" step="0.01" required/>
+    <br/>
+
+    <label>Plazo entrega (días):</label>
+    <input type="number" th:field="*{plazoEntregaDias}" required/>
+    <br/>
+
+    <button type="submit">Publicar</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<body>
+<h1>Productos disponibles</h1>
+
+<ul>
+    <li th:each="p : ${productos}">
+        <span th:text="${p.nombre}"></span> —
+        <span th:text="${p.precioBase}"></span>
+
+        <form th:action="@{'/agregar/' + ${p.id}}" method="post">
+            <button type="submit">Agregar a la Cesta</button>
+        </form>
+    </li>
+</ul>
+
+<a href="/cesta">Ir a la cesta</a>
+
+</body>
+</html>

@@ -2,29 +2,29 @@ package com.celicienta.celicienta.Service;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class CestaService {
-    private final Map<Long, List<Long>> cestas = new ConcurrentHashMap<>();
-
-
-    public List<Long> obtenerCesta(Long idUsuario) {
-        return cestas.getOrDefault(idUsuario, new ArrayList<>());
-    }
+    private Map<Long, List<Long>> cestaPorUsuario = new HashMap<>();
 
     public void agregarProducto(Long idUsuario, Long idProducto) {
-        cestas.computeIfAbsent(idUsuario, k -> new ArrayList<>()).add(idProducto);
+        cestaPorUsuario.computeIfAbsent(idUsuario, k -> new ArrayList<>()).add(idProducto);
+    }
+
+    public List<Long> obtenerCesta(Long idUsuario) {
+        return cestaPorUsuario.getOrDefault(idUsuario, new ArrayList<>());
     }
 
     public void eliminarProducto(Long idUsuario, Long idProducto) {
-        cestas.computeIfAbsent(idUsuario, k -> new ArrayList<>()).remove(idProducto);
+        cestaPorUsuario.computeIfAbsent(idUsuario, k -> new ArrayList<>()).remove(idProducto);
     }
 
     public void vaciarCesta(Long idUsuario) {
-        cestas.remove(idUsuario);
+        cestaPorUsuario.remove(idUsuario);
     }
 
 }

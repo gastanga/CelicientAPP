@@ -1,4 +1,4 @@
-package com.celicienta.celicienta.Controller;
+package com.celicienta.celicienta.RestController;
 import com.celicienta.celicienta.Entity.*;
 import com.celicienta.celicienta.Service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;

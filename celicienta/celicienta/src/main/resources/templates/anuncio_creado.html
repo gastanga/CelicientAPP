@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Anuncio Creado</title>
+</head>
+<body>
+<h1>¡Anuncio publicado con éxito!</h1>
+
+<p><strong>Nombre:</strong> <span th:text="${anuncio.nombre}"></span></p>
+<p><strong>Descripción:</strong> <span th:text="${anuncio.descripcion}"></span></p>
+<p><strong>Precio:</strong> $<span th:text="${anuncio.precio}"></span></p>
+<p><strong>Plazo entrega:</strong> <span th:text="${anuncio.plazoEntregaDias}"></span> días</p>
+
+<h2>Vendedor</h2>
+<p><strong>Usuario:</strong> <span th:text="${anuncio.vendedor.nombreUsuario}"></span></p>
+<p><strong>Tienda:</strong> <span th:text="${anuncio.vendedor.nombreTienda}"></span></p>
+<p><strong>Rating:</strong> <span th:text="${anuncio.vendedor.ratingPromedio}"></span></p>
+
+<a href="#" onclick="history.back()">Publicar otro anuncio</a>
+</body>
+</html>

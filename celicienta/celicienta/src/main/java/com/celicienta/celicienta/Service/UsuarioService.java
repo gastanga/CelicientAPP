@@ -22,16 +22,18 @@ public class UsuarioService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public Usuario registrarUsuario(Usuario usuario) {
-        if (usuarioRepo.existsByUsuarioOrEmail(usuario.getUsername(), usuario.getEmail())) {
+        if (usuarioRepo.existsByUsernameOrEmail(usuario.getUsername(), usuario.getEmail())) {
             throw new RuntimeException("Usuario o email ya registrado");
         }
 
+        if (!usuario.esPasswordValida(usuario.getPassword())) {
+            throw new RuntimeException("La contraseña debe tener 8 caracteres, 1 letra, 1 número y 1 símbolo.");
+        }
         usuario.setPassword(encoder.encode(usuario.getPassword()));
         usuario.getRoles().add(Rol.COMPRADOR);
 
         Usuario guardado = usuarioRepo.save(usuario);
 
-        // Crear perfil de comprador por defecto
         CompradorProfile cp = new CompradorProfile();
         cp.setUsuario(guardado);
 
@@ -43,94 +45,102 @@ public class UsuarioService {
 
     public Usuario registrarUsuarioDto(RegistroDTO dto) {
 
-        // 1) Validación básica de campos obligatorios
-        if (dto.getUsuario() == null || dto.getUsuario().isBlank()) {
-            throw new RuntimeException("El nombre de usuario es obligatorio.");
-        }
-
-        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
-            throw new RuntimeException("El email es obligatorio.");
-        }
-
-        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
-            throw new RuntimeException("La contraseña es obligatoria.");
-        }
-
-        // 2) Validar duplicado de usuario o email
-        if (usuarioRepo.existsByUsuarioOrEmail(dto.getUsuario(), dto.getEmail())) {
+        if (usuarioRepo.existsByUsernameOrEmail(dto.getUsuario(), dto.getEmail())) {
             throw new RuntimeException("Usuario o email ya registrado.");
         }
 
-        // 3) Validar la contraseña ANTES de cifrarla
-        Usuario temporal = new Usuario();
-        if (!temporal.esPasswordValida(dto.getPassword())) {
-            throw new RuntimeException(
-                    "La contraseña debe tener 8 caracteres, 1 letra, 1 número y 1 símbolo."
-            );
+        Usuario temp = new Usuario();
+        if (!temp.esPasswordValida(dto.getPassword())) {
+            throw new RuntimeException("La contraseña debe tener 8 caracteres, 1 letra, 1 número y 1 símbolo.");
         }
 
-        // 4) Crear usuario y copiar datos
+        if (dto.isQuiereSerVendedor()) {
+
+            if (dto.getNombreTienda() == null || dto.getNombreTienda().isBlank())
+                throw new RuntimeException("El nombre de la tienda es obligatorio.");
+
+            if (dto.getCodigoPostalTienda() == null || dto.getCodigoPostalTienda().isBlank())
+                throw new RuntimeException("El código postal es obligatorio.");
+
+            if (dto.getDireccionTienda() == null || dto.getDireccionTienda().isBlank())
+                throw new RuntimeException("La dirección de la tienda es obligatoria.");
+
+            if (dto.getTelefonoContacto() == null || dto.getTelefonoContacto().isBlank())
+                throw new RuntimeException("El teléfono de contacto es obligatorio.");
+
+            if (dto.getRadioEntregaKm() == null || dto.getRadioEntregaKm() <= 0)
+                throw new RuntimeException("El radio de entrega debe ser mayor a cero.");
+
+            if (dto.getDescripcionTienda() == null || dto.getDescripcionTienda().isBlank())
+                throw new RuntimeException("La descripción de la tienda es obligatoria.");
+        }
+
         Usuario u = new Usuario();
         u.setUsername(dto.getUsuario());
         u.setEmail(dto.getEmail());
         u.setNombreCompleto(dto.getNombreCompleto());
-
-        // 5) Cifrar contraseña recién ahora
+        u.setDni(dto.getDni());
+        u.setTelefonoEntrega(dto.getTelefonoEntrega());
+        u.setProvincia(dto.getProvincia());
+        u.setCiudad(dto.getCiudad());
+        u.setDireccionEntrega(dto.getDireccionEntregaDefault());
         u.setPassword(encoder.encode(dto.getPassword()));
-
-        // 6) Rol mínimo obligatorio: COMPRADOR
+        u.setCodigoPostal(dto.getCodigoPostal());
         u.getRoles().add(Rol.COMPRADOR);
 
-        // 7) Guardar usuario
         Usuario guardado = usuarioRepo.save(u);
 
-        // 8) Crear perfil del comprador (default)
         CompradorProfile cp = new CompradorProfile();
         cp.setUsuario(guardado);
-        guardado.setCompradorProfile(cp);
+        cp.setDireccionEntregaDefault(dto.getDireccionEntregaDefault());
+        cp.setTelefonoEntrega(dto.getTelefonoEntrega());
         compradorProfileRepo.save(cp);
+        guardado.setCompradorProfile(cp);
 
-        // 9) Si marcó “quiero ser vendedor”, validar y activar
         if (dto.isQuiereSerVendedor()) {
 
-            if (dto.getNombreTienda() == null || dto.getNombreTienda().isBlank()) {
-                throw new RuntimeException("El nombre de tienda es obligatorio para vendedores.");
-            }
+            VendedorProfile vp = new VendedorProfile();
+            vp.setUsuario(guardado);
+            vp.setNombreTienda(dto.getNombreTienda());
+            vp.setDireccionTienda(dto.getDireccionTienda());
+            vp.setTelefonoContacto(dto.getTelefonoContacto());
+            vp.setRadioEntregaKm(dto.getRadioEntregaKm());
+            vp.setDescripcionTienda(dto.getDescripcionTienda());
+            vp.setCodigoPostalTienda(dto.getCodigoPostalTienda());
 
-            activarVendedor(guardado.getId(), dto.getNombreTienda());
+            vendedorProfileRepo.save(vp);
+
+            guardado.getRoles().add(Rol.VENDEDOR);
+            guardado.setVendedorProfile(vp);
         }
 
-        return guardado;
+        return usuarioRepo.save(guardado);
     }
 
-
-    public VendedorProfile activarVendedor(Long userId, String nombreTienda){
-        Usuario u = buscarPorId(userId);
+    public VendedorProfile activarVendedor(Long idUsuario, String nombreTienda){
+        Usuario u = usuarioRepo.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         VendedorProfile vp = new VendedorProfile();
         vp.setUsuario(u);
         vp.setNombreTienda(nombreTienda);
-
         u.getRoles().add(Rol.VENDEDOR);
         u.setVendedorProfile(vp);
 
         usuarioRepo.save(u);
 
-        return vendedorProfileRepo.save(vp);
+        return vp;
     }
 
     public Usuario iniciarSesion(String usuario, String password) {
-        Usuario u = usuarioRepo.findByUsuario(usuario)
+        Usuario u = usuarioRepo.findByUsername(usuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // 🚫 Si está bloqueado
         if (u.isBloqueado()) {
             throw new RuntimeException("Cuenta bloqueada por intentos fallidos. Contacte soporte.");
         }
 
-        // ✅ Verificar contraseña cifrada
         if (!encoder.matches(password, u.getPassword())) {
-            // ❌ Contraseña incorrecta → incrementar intentos
             u.setIntentosFallidos(u.getIntentosFallidos() + 1);
 
             if (u.getIntentosFallidos() >= 3) {
@@ -141,7 +151,6 @@ public class UsuarioService {
             throw new RuntimeException("Contraseña incorrecta.");
         }
 
-        // ✅ Login exitoso → resetear intentos
         u.setIntentosFallidos(0);
         usuarioRepo.save(u);
 

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VendedorProfile {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
@@ -24,6 +25,8 @@ public class VendedorProfile {
     private String direccionTienda;
     private String telefonoContacto;
     private int radioEntregaKm;
+    private String descripcionTienda;
+    private String codigoPostalTienda;
 
     private Double ratingPromedio = 0.0;
     private int totalResenas = 0;

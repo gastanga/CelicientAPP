@@ -1,16 +1,20 @@
-package com.celicienta.celicienta.Controller;
-import com.celicienta.celicienta.DTO.ProductoDTO;
+package com.celicienta.celicienta.RestController;
+import com.celicienta.celicienta.DTO.AnuncioDTO;
+import com.celicienta.celicienta.DTO.RegistroDTO;
 import com.celicienta.celicienta.DTO.UsuarioDTO;
-import com.celicienta.celicienta.DTO.VendedorDTO;
+import com.celicienta.celicienta.DTO.VendedorPublicoDTO;
 import com.celicienta.celicienta.Entity.*;
-import com.celicienta.celicienta.Repository.VendedorProfileRepo;
 import com.celicienta.celicienta.Service.UsuarioService;
 import com.celicienta.celicienta.Service.VendedorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -23,8 +27,21 @@ public class UsuarioController {
     private VendedorService vendedorService;
 
     @PostMapping("/registrar")
-    public Usuario registrar(@RequestBody Usuario usuario) {
-        return usuarioService.registrarUsuario(usuario);
+    public ResponseEntity<?> registrar(@Valid @RequestBody RegistroDTO dto, BindingResult result) {
+
+        if (result.hasErrors()) {
+            // Devolver todos los errores juntos
+            Map<String, String> errores = new HashMap<>();
+
+            result.getFieldErrors().forEach(err ->
+                    errores.put(err.getField(), err.getDefaultMessage())
+            );
+
+            return ResponseEntity.badRequest().body(errores);
+        }
+
+        Usuario u = usuarioService.registrarUsuarioDto(dto);
+        return ResponseEntity.ok(u);
     }
 
     @PostMapping("/login")
@@ -44,20 +61,20 @@ public class UsuarioController {
     }
 
     @PostMapping("/{id}/activar-vendedor")
-    public VendedorDTO activar(@PathVariable Long id, @RequestParam String nombreTienda) {
+    public VendedorPublicoDTO activar(@PathVariable Long id, @RequestParam String nombreTienda) {
         VendedorProfile vp = usuarioService.activarVendedor(id, nombreTienda);
-        return new VendedorDTO(vp);
+        return new VendedorPublicoDTO(vp);
     }
 
     @GetMapping("/vendedor/{id}")
-    public VendedorDTO verVendedor(@PathVariable Long id) {
+    public VendedorPublicoDTO verVendedor(@PathVariable Long id) {
         VendedorProfile vp = vendedorService.obtenerPerfil(id);
-        return new VendedorDTO(vp);
+        return new VendedorPublicoDTO(vp);
     }
 
     @GetMapping("/vendedor/{id}/productos")
-    public ResponseEntity<List<ProductoDTO>> listarProductos(@PathVariable Long id) {
-        List<ProductoDTO> lista = vendedorService.listarProductosDto(id);
+    public ResponseEntity<List<AnuncioDTO>> listarProductos(@PathVariable Long id) {
+        List<AnuncioDTO> lista = vendedorService.listarProductosDto(id);
         return ResponseEntity.ok(lista);
     }
 

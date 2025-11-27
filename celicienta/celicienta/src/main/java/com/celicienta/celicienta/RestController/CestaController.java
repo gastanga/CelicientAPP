@@ -1,4 +1,4 @@
-package com.celicienta.celicienta.Controller;
+package com.celicienta.celicienta.RestController;
 
 import com.celicienta.celicienta.Service.CestaService;
 import org.springframework.http.ResponseEntity;
